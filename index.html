@@ -469,13 +469,13 @@
   .drive-link {
     flex-shrink: 0;
     display: flex;
-    color: var(--ink-faint);
     padding: 2px;
     border-radius: 5px;
-    transition: color 0.15s ease, background 0.15s ease;
+    opacity: 0.85;
+    transition: opacity 0.15s ease, background 0.15s ease, transform 0.15s ease;
   }
 
-  .drive-link:hover { color: var(--accent); background: var(--accent-soft); }
+  .drive-link:hover { opacity: 1; background: var(--card-soft); transform: scale(1.1); }
 
   .seg {
     display: inline-flex;
@@ -1167,7 +1167,7 @@
         driveLink.target = "_blank";
         driveLink.rel = "noopener";
         driveLink.title = "Abrir pasta no Drive";
-        driveLink.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M5.5 2h5l4 4v6.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 3.5 12.5v-9A1.5 1.5 0 0 1 5 2Z\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M10 2v3.5a.5.5 0 0 0 .5.5H14\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/></svg>";
+        driveLink.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\"><polygon points=\"3,4 12,4 12,13 8.06,13\" fill=\"#34A853\"/><polygon points=\"12,4 21,4 15.94,13 12,13\" fill=\"#4285F4\"/><polygon points=\"8.06,13 15.94,13 12,20\" fill=\"#FBBC05\"/></svg>";
         nameWrap.appendChild(driveLink);
       }
       row.appendChild(nameWrap);
