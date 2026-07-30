@@ -480,6 +480,8 @@
   }
 
   .seg button:hover { color: var(--ink-soft); }
+  .seg button:disabled { cursor: default; }
+  .seg button:disabled:hover { color: var(--ink-faint); }
 
   .seg button.on[data-status="nao_tem"] { background: var(--nao-tem); color: #fff; }
   .seg button.on[data-status="basico"] { background: var(--basico); color: #fff; }
@@ -632,6 +634,69 @@
 
   #print-report { display: none; }
 
+  .auth-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 3, 8, 0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .auth-overlay.show { display: flex; }
+
+  .auth-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    padding: 22px;
+    width: min(360px, 100%);
+  }
+
+  .auth-panel h2 {
+    font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+
+  .auth-panel p {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin: 0 0 14px;
+  }
+
+  .auth-panel input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .auth-error {
+    color: var(--nao-tem) !important;
+    font-size: 12px !important;
+    min-height: 16px;
+    margin: 0 0 8px !important;
+  }
+
+  .auth-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  #btn-auth.authed { color: var(--accent); border-color: var(--accent); }
+
   @media print {
     html, body, #print-report, #print-report * {
       -webkit-print-color-adjust: exact !important;
@@ -712,6 +777,10 @@
       <p class="sub" id="page-sub">Classifique o que cada cliente da Tastto tem disponível na pasta de logos (04 | AUDIOVISUAL &gt; 01 | LOGOS) e mantenha a lista atualizada conforme os materiais chegam.</p>
     </div>
     <div class="head-actions">
+      <button class="ghost" id="btn-auth">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" id="auth-icon"><path d="M8 8.5a2.75 2.75 0 1 0 0-5.5 2.75 2.75 0 0 0 0 5.5Z" stroke="currentColor" stroke-width="1.4"/><path d="M2.8 13c.7-2.4 2.8-4 5.2-4s4.5 1.6 5.2 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span id="btn-auth-label">Entrar</span>
+      </button>
       <button class="ghost" id="btn-pdf">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v8.3M8 9.8 5 6.8M8 9.8l3-3M2.5 11v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Baixar PDF
@@ -779,12 +848,12 @@
 
   <div class="list" id="list"></div>
 
-  <p class="foot">Esses dados ficam salvos num banco compartilhado — qualquer pessoa com o link vê e edita a mesma lista, em tempo real. Base inicial: auditoria do Google Drive de 21/07/2026 · operado por Grupo Arttico.</p>
+  <p class="foot" id="foot-text">Esses dados ficam salvos num banco compartilhado, visível pra quem tiver o link. Faça login pra editar. Base inicial: auditoria do Google Drive de 21/07/2026 · operado por Grupo Arttico.</p>
 
   <div class="sync-actions">
     <button type="button" id="btn-export">Exportar dados (.json)</button>
-    <span class="sync-sep">·</span>
-    <button type="button" id="btn-import">Importar dados</button>
+    <span class="sync-sep" id="import-sep">·</span>
+    <button type="button" id="btn-import" style="display:none;">Importar dados</button>
     <input type="file" id="import-file" accept="application/json,.json" style="display:none" />
   </div>
   <p class="sync-hint" id="sync-hint"></p>
@@ -795,6 +864,19 @@
   </div>
 
   <div id="print-report"></div>
+
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-panel">
+      <h2>Entrar pra editar</h2>
+      <p>Peça a senha de edição pra quem administra o painel. Sem ela, dá pra ver tudo, mas não pra alterar.</p>
+      <input type="password" id="auth-password" placeholder="Senha" autocomplete="current-password" />
+      <p class="auth-error" id="auth-error"></p>
+      <div class="auth-actions">
+        <button class="ghost" id="auth-cancel" type="button">Cancelar</button>
+        <button class="primary" id="auth-submit" type="button">Entrar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -805,6 +887,10 @@
   var SUPABASE_ANON_KEY = "sb_publishable_mVUZJcZPqcxKwmd_W9Mc5A_pDNZN3u_";
   var CONFIGURED = SUPABASE_URL.indexOf("COLOQUE_AQUI") === -1 && SUPABASE_ANON_KEY.indexOf("COLOQUE_AQUI") === -1;
   var db = (CONFIGURED && window.supabase) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  // Conta compartilhada usada só pra login (a senha real é definida no Supabase Auth).
+  // Veja auth-setup.sql / README.md pra criar essa conta e travar as permissões de escrita.
+  var AUTH_EMAIL = "equipe@identidade-visual.local";
 
   var STATUS_LABEL = { nao_tem: "Não tem", basico: "Básico", completo: "Completo" };
   var STATUS_ORDER = ["nao_tem", "basico", "completo"];
@@ -844,7 +930,7 @@
   };
 
   var BRAND_STORAGE_KEY = "identidade-visual-marca-ativa";
-  var state = { brand: "tastto", clients: [], filter: "all", search: "", confirmingId: null };
+  var state = { brand: "tastto", clients: [], filter: "all", search: "", confirmingId: null, canEdit: false };
   var realtimeChannel = null;
   var hintTimer = null;
 
@@ -865,6 +951,46 @@
   function requireDb() {
     if (!db) { showHint("Supabase não configurado — veja o aviso no topo da página.", true); return null; }
     return db;
+  }
+
+  function updateAuthUI() {
+    var label = document.getElementById("btn-auth-label");
+    var btn = document.getElementById("btn-auth");
+    label.textContent = state.canEdit ? "Sair" : "Entrar";
+    btn.classList.toggle("authed", state.canEdit);
+    document.getElementById("toggle-add").style.display = state.canEdit ? "" : "none";
+    document.getElementById("btn-import").style.display = state.canEdit ? "" : "none";
+    document.getElementById("import-sep").style.display = state.canEdit ? "" : "none";
+    document.getElementById("foot-text").textContent = state.canEdit
+      ? "Modo edição ativo — as alterações são salvas pra todo mundo, em tempo real. Base inicial: auditoria do Google Drive de 21/07/2026 · operado por Grupo Arttico."
+      : "Esses dados ficam salvos num banco compartilhado, visível pra quem tiver o link. Faça login pra editar. Base inicial: auditoria do Google Drive de 21/07/2026 · operado por Grupo Arttico.";
+  }
+
+  function openAuthOverlay() {
+    document.getElementById("auth-error").textContent = "";
+    document.getElementById("auth-password").value = "";
+    document.getElementById("auth-overlay").classList.add("show");
+    setTimeout(function () { document.getElementById("auth-password").focus(); }, 30);
+  }
+
+  function closeAuthOverlay() {
+    document.getElementById("auth-overlay").classList.remove("show");
+  }
+
+  function submitAuth() {
+    if (!requireDb()) return;
+    var pass = document.getElementById("auth-password").value;
+    if (!pass) return;
+    var errEl = document.getElementById("auth-error");
+    errEl.textContent = "Entrando…";
+    db.auth.signInWithPassword({ email: AUTH_EMAIL, password: pass }).then(function (res) {
+      if (res.error) {
+        errEl.textContent = "Senha incorreta.";
+        return;
+      }
+      closeAuthOverlay();
+      showHint("Login feito — agora você pode editar.");
+    });
   }
 
   function rowToClient(row) {
@@ -1025,8 +1151,9 @@
         b.setAttribute("aria-checked", s === c.status ? "true" : "false");
         b.className = s === c.status ? "on" : "";
         b.textContent = STATUS_LABEL[s];
+        b.disabled = !state.canEdit;
         b.addEventListener("click", function () {
-          if (c.status === s || !requireDb()) return;
+          if (!state.canEdit || c.status === s || !requireDb()) return;
           var prev = c.status;
           c.status = s;
           render();
@@ -1043,8 +1170,10 @@
       note.type = "text";
       note.placeholder = "Observação…";
       note.value = c.note || "";
+      note.readOnly = !state.canEdit;
+      if (!state.canEdit) note.title = "Faça login para editar";
       note.addEventListener("change", function () {
-        if (!requireDb()) { note.value = c.note || ""; return; }
+        if (!state.canEdit || !requireDb()) { note.value = c.note || ""; return; }
         var prev = c.note;
         c.note = note.value;
         db.from("clientes").update({ note: c.note }).eq("id", c.id).then(function (res) {
@@ -1056,7 +1185,9 @@
       var actions = document.createElement("div");
       actions.className = "row-actions";
 
-      if (state.confirmingId === c.id) {
+      if (!state.canEdit) {
+        // sem ações de edição pra quem não fez login
+      } else if (state.confirmingId === c.id) {
         var confirmWrap = document.createElement("div");
         confirmWrap.className = "confirm-del";
         var span = document.createElement("span");
@@ -1116,6 +1247,7 @@
   });
 
   function addClient() {
+    if (!state.canEdit) { showHint("Faça login pra adicionar clientes.", true); return; }
     if (!requireDb()) return;
     var nameInput = document.getElementById("new-name");
     var statusInput = document.getElementById("new-status");
@@ -1254,13 +1386,14 @@
   });
 
   document.getElementById("btn-import").addEventListener("click", function () {
+    if (!state.canEdit) { showHint("Faça login pra importar dados.", true); return; }
     document.getElementById("import-file").click();
   });
 
   document.getElementById("import-file").addEventListener("change", function (e) {
     var file = e.target.files && e.target.files[0];
     e.target.value = "";
-    if (!file || !requireDb()) return;
+    if (!file || !state.canEdit || !requireDb()) return;
     var reader = new FileReader();
     reader.onload = function () {
       var parsed;
@@ -1298,7 +1431,36 @@
     reader.readAsText(file);
   });
 
+  document.getElementById("btn-auth").addEventListener("click", function () {
+    if (state.canEdit) {
+      if (requireDb()) db.auth.signOut();
+      return;
+    }
+    openAuthOverlay();
+  });
+
+  document.getElementById("auth-cancel").addEventListener("click", closeAuthOverlay);
+  document.getElementById("auth-submit").addEventListener("click", submitAuth);
+  document.getElementById("auth-password").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); submitAuth(); }
+  });
+  document.getElementById("auth-overlay").addEventListener("click", function (e) {
+    if (e.target.id === "auth-overlay") closeAuthOverlay();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeAuthOverlay();
+  });
+
+  if (db) {
+    db.auth.onAuthStateChange(function (event, session) {
+      state.canEdit = !!session;
+      updateAuthUI();
+      render();
+    });
+  }
+
   document.getElementById("setup-banner").style.display = CONFIGURED ? "none" : "block";
+  updateAuthUI();
 
   var initialBrand = "tastto";
   try {
