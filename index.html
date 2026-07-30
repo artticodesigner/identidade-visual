@@ -878,12 +878,15 @@
   }
 
   async function load() {
+    var requestedBrand = state.brand;
     if (!db) { state.clients = []; render(); return; }
     document.getElementById("list").innerHTML = '<div class="empty">Carregando…</div>';
     try {
-      var rows = await fetchClients(state.brand);
+      var rows = await fetchClients(requestedBrand);
+      if (state.brand !== requestedBrand) return; // resposta antiga, marca já mudou de novo
       state.clients = rows.map(rowToClient);
     } catch (err) {
+      if (state.brand !== requestedBrand) return;
       showHint("Erro ao carregar dados: " + errMsg(err), true);
       state.clients = [];
     }
