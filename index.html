@@ -1218,6 +1218,9 @@
   document.getElementById("btn-pdf").addEventListener("click", function () {
     buildPrintReport();
     document.getElementById("print-banner").classList.add("show");
+    setTimeout(function () {
+      try { window.print(); } catch (e) {}
+    }, 50);
   });
 
   document.getElementById("print-banner-close").addEventListener("click", function () {
