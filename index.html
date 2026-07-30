@@ -450,13 +450,32 @@
     flex-shrink: 0;
   }
 
+  .name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
   .row .name {
     font-weight: 600;
     font-size: 14.5px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    min-width: 0;
   }
+
+  .drive-link {
+    flex-shrink: 0;
+    display: flex;
+    color: var(--ink-faint);
+    padding: 2px;
+    border-radius: 5px;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .drive-link:hover { color: var(--accent); background: var(--accent-soft); }
 
   .seg {
     display: inline-flex;
@@ -723,7 +742,7 @@
       row-gap: 8px;
     }
     .row .avatar { grid-area: avatar; }
-    .row .name { grid-area: name; align-self: center; }
+    .name-wrap { grid-area: name; align-self: center; }
     .row .seg { grid-area: seg; width: 100%; justify-content: space-between; }
     .row .seg button { flex: 1; }
     .row .note-input { grid-area: note; }
@@ -995,7 +1014,7 @@
   }
 
   function rowToClient(row) {
-    return { id: row.id, name: row.name, status: row.status, note: row.note || "" };
+    return { id: row.id, name: row.name, status: row.status, note: row.note || "", driveUrl: row.drive_url || "" };
   }
 
   async function fetchClients(brandKey) {
@@ -1134,11 +1153,24 @@
       avatar.style.color = "var(--" + c.status.replace("_", "-") + "-ink)";
       row.appendChild(avatar);
 
-      var name = document.createElement("div");
+      var nameWrap = document.createElement("div");
+      nameWrap.className = "name-wrap";
+      var name = document.createElement("span");
       name.className = "name";
       name.textContent = c.name;
       name.title = c.name;
-      row.appendChild(name);
+      nameWrap.appendChild(name);
+      if (state.canEdit && c.driveUrl) {
+        var driveLink = document.createElement("a");
+        driveLink.className = "drive-link";
+        driveLink.href = c.driveUrl;
+        driveLink.target = "_blank";
+        driveLink.rel = "noopener";
+        driveLink.title = "Abrir pasta no Drive";
+        driveLink.innerHTML = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M5.5 2h5l4 4v6.5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 3.5 12.5v-9A1.5 1.5 0 0 1 5 2Z\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M10 2v3.5a.5.5 0 0 0 .5.5H14\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/></svg>";
+        nameWrap.appendChild(driveLink);
+      }
+      row.appendChild(nameWrap);
 
       var seg = document.createElement("div");
       seg.className = "seg";
