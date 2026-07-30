@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Identidade Visual — Clientes</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #100d1a;
+    --bg-wash-1: #241c3d;
+    --bg-wash-2: #1a1530;
+    --card: #17131f;
+    --card-soft: #1c1727;
+    --border: #2c2740;
+    --border-soft: #231f33;
+    --ink: #edebf7;
+    --ink-soft: #aca4c9;
+    --ink-faint: #746c93;
+    --accent: #7c6cf6;
+    --accent-hi: #9285ff;
+    --accent-ink: #ffffff;
+    --accent-soft: #241f3d;
+    --focus: #9285ff;
+
+    --nao-tem: #e0785f;
+    --nao-tem-bg: #33212c;
+    --nao-tem-ink: #f2bbae;
+    --basico: #d8ac49;
+    --basico-bg: #302a24;
+    --basico-ink: #edce8c;
+    --completo: #5fbf85;
+    --completo-bg: #182e2a;
+    --completo-ink: #a6dcc0;
+
+    --shadow-sm: 0 1px 2px rgba(8, 6, 16, 0.4);
+    --shadow-md: 0 1px 2px rgba(8, 6, 16, 0.45), 0 14px 34px -16px rgba(70, 45, 150, 0.4);
+    --shadow-lg: 0 6px 16px rgba(8, 6, 16, 0.5), 0 30px 60px -20px rgba(80, 55, 170, 0.45);
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(900px 420px at 12% -8%, var(--bg-wash-1), transparent 60%),
+      radial-gradient(700px 360px at 100% 0%, var(--bg-wash-2), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px 24px 90px;
+  }
+
+  .setup-banner {
+    background: #3a2f1a;
+    border: 1px solid #8a6a2a;
+    color: #f2d9a0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+
+  .setup-banner code {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .brand-switch {
+    display: inline-flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 3px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .brand-switch button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .brand-switch button svg { flex-shrink: 0; }
+  .brand-switch button:hover { color: var(--ink-soft); }
+
+  .brand-switch button.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  header.page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 16px;
+  }
+
+  .brand-mark {
+    color: var(--accent);
+    filter: drop-shadow(0 0 14px color-mix(in srgb, var(--accent) 45%, transparent));
+    flex-shrink: 0;
+  }
+
+  .brand-word {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .brand-tag {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 4px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+
+  h1 {
+    font-family: ui-serif, "Iowan Old Style", "Palatino Linotype", "URW Palladio", Georgia, serif;
+    font-size: 33px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  .sub {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin: 0;
+    max-width: 58ch;
+  }
+
+  .head-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  button.ghost {
+    background: var(--card);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button.ghost:hover { border-color: var(--ink-faint); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+  button.primary {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 10px 17px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    box-shadow: var(--shadow-sm);
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button.primary:hover { background: var(--accent-hi); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  button.primary:active, button.ghost:active { transform: translateY(0); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 0 0 24px;
+  }
+
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--ink-faint);
+  }
+
+  .stat.nao-tem::before { background: var(--nao-tem); }
+  .stat.basico::before { background: var(--basico); }
+  .stat.completo::before { background: var(--completo); }
+  .stat.total::before { background: var(--accent); }
+
+  .stat .n {
+    font-variant-numeric: tabular-nums;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+    letter-spacing: -0.02em;
+  }
+
+  .stat .l {
+    margin-top: 7px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  .stat .pct {
+    font-variant-numeric: tabular-nums;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+
+  .stat.total .n { color: var(--ink); }
+  .stat.nao-tem .n { color: var(--nao-tem); }
+  .stat.basico .n { color: var(--basico); }
+  .stat.completo .n { color: var(--completo); }
+
+  .toolbar {
+    position: sticky;
+    top: 12px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: color-mix(in srgb, var(--card) 88%, transparent);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .search {
+    flex: 1 1 200px;
+    position: relative;
+  }
+
+  .search input {
+    width: 100%;
+    padding: 9px 12px 9px 32px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+  }
+
+  .search svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
+  }
+
+  .chip:hover { border-color: var(--ink-faint); }
+  .chip:active { transform: scale(0.97); }
+
+  .chip.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .chip[data-status="nao_tem"].active { background: var(--nao-tem); border-color: var(--nao-tem); color: #fff; }
+  .chip[data-status="basico"].active { background: var(--basico); border-color: var(--basico); color: #fff; }
+  .chip[data-status="completo"].active { background: var(--completo); border-color: var(--completo); color: #fff; }
+
+  .add-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 18px;
+    margin-bottom: 18px;
+    display: none;
+    grid-template-columns: 1.3fr 1fr 1.5fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .add-panel.open {
+    display: grid;
+    animation: drop-in 0.18s ease;
+  }
+
+  @keyframes drop-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .field input, .field select {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-family: inherit;
+  }
+
+  .field input:focus, .field select:focus, .chip:focus-visible, button:focus-visible, .note-input:focus, .seg button:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .group-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin: 14px 2px 2px;
+  }
+
+  .list .group-label:first-child { margin-top: 0; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 34px 1.3fr 232px 1.5fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 11px 14px;
+    background: var(--card);
+    border: 1px solid var(--border-soft);
+    border-radius: 11px;
+    box-shadow: var(--shadow-sm);
+    animation: rise-in 0.22s ease both;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .row:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border);
+    transform: translateY(-1px);
+  }
+
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12.5px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .row .name {
+    font-weight: 600;
+    font-size: 14.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .seg {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .seg button {
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .seg button:hover { color: var(--ink-soft); }
+
+  .seg button.on[data-status="nao_tem"] { background: var(--nao-tem); color: #fff; }
+  .seg button.on[data-status="basico"] { background: var(--basico); color: #fff; }
+  .seg button.on[data-status="completo"] { background: var(--completo); color: #fff; }
+
+  .note-input {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-soft);
+    font-size: 13px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    font-family: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .note-input::placeholder { color: var(--ink-faint); }
+  .note-input:hover { border-color: var(--border); background: var(--card-soft); }
+  .note-input:focus { border-color: var(--focus); background: var(--bg); outline: none; color: var(--ink); }
+
+  .row-actions { display: flex; justify-content: flex-end; }
+
+  .del {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 8px;
+    display: flex;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+
+  .del:hover { color: var(--nao-tem); background: var(--nao-tem-bg); }
+
+  .confirm-del {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .confirm-del span { color: var(--ink-soft); margin-right: 2px; }
+
+  .confirm-del button {
+    border: none;
+    border-radius: 7px;
+    padding: 5px 9px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .confirm-del .yes { background: var(--nao-tem); color: #fff; }
+  .confirm-del .no { background: var(--bg); color: var(--ink-soft); border: 1px solid var(--border); }
+
+  .empty {
+    padding: 56px 16px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 14px;
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+  }
+
+  .empty svg { display: block; margin: 0 auto 12px; opacity: 0.5; }
+
+  .foot {
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: center;
+  }
+
+  .sync-actions {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12.5px;
+  }
+
+  .sync-actions button {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 2px 4px;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .sync-actions button:hover { text-decoration-color: var(--accent); }
+  .sync-sep { color: var(--ink-faint); margin: 0 4px; }
+
+  .sync-hint {
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    text-align: center;
+    color: var(--ink-faint);
+    min-height: 14px;
+  }
+
+  .print-banner {
+    position: fixed;
+    left: 50%;
+    top: 20px;
+    transform: translateX(-50%);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    box-shadow: var(--shadow-lg);
+    padding: 14px 18px;
+    display: none;
+    align-items: center;
+    gap: 14px;
+    z-index: 100;
+    max-width: 92vw;
+  }
+
+  .print-banner.show { display: flex; animation: rise-in 0.2s ease; }
+
+  .print-banner .kbd {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-weight: 800;
+    font-size: 12.5px;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  }
+
+  .print-banner p { margin: 0; font-size: 13px; }
+  .print-banner p strong { display: block; font-size: 13.5px; margin-bottom: 2px; }
+
+  .print-banner button {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+
+  #print-report { display: none; }
+
+  @media print {
+    html, body, #print-report, #print-report * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    html, body { min-height: 0 !important; height: auto !important; }
+    body { background: none !important; }
+    .wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; min-height: 0 !important; }
+    .wrap > *:not(#print-report) { display: none !important; }
+    #print-report { display: block; }
+    @page { margin: 10mm; }
+  }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .row {
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "avatar name"
+        "seg seg"
+        "note note";
+      row-gap: 8px;
+    }
+    .row .avatar { grid-area: avatar; }
+    .row .name { grid-area: name; align-self: center; }
+    .row .seg { grid-area: seg; width: 100%; justify-content: space-between; }
+    .row .seg button { flex: 1; }
+    .row .note-input { grid-area: note; }
+    .row-actions { grid-area: name; justify-self: end; }
+    .add-panel { grid-template-columns: 1fr; }
+    header.page-head { flex-direction: column; align-items: flex-start; }
+    .head-actions { width: 100%; }
+    .head-actions button { flex: 1; justify-content: center; }
+    .toolbar { position: static; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, .row, .add-panel.open { transition: none !important; animation: none !important; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="setup-banner" id="setup-banner" style="display:none;">
+    <strong>Configuração pendente.</strong> Esse painel usa o Supabase como banco de dados compartilhado.
+    Abra <code>identidade-visual/index.html</code>, preencha <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code>
+    no topo do <code>&lt;script&gt;</code> com os dados do seu projeto Supabase, e publique de novo.
+    Até lá, a lista fica vazia e as ações ficam desativadas.
+  </div>
+
+  <div class="brand-switch" id="brand-switch" role="tablist">
+    <button type="button" data-brand="tastto" role="tab">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 9.3c3.6 0 6.3-1.9 8.4-5.3" stroke="currentColor" stroke-width="4.3" stroke-linecap="round"/><rect x="9.1" y="10.4" width="4.3" height="9.4" rx="1.1" fill="currentColor"/></svg>
+      Tastto
+    </button>
+    <button type="button" data-brand="arttico" role="tab">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor" opacity="0.15"/><path d="M12 5 19 19M12 5 5 19M8.5 14h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Arttico
+    </button>
+  </div>
+
+  <header class="page-head">
+    <div>
+      <div class="brand">
+        <span class="brand-mark" id="brand-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M4 9.3c3.6 0 6.3-1.9 8.4-5.3" stroke="currentColor" stroke-width="4.3" stroke-linecap="round"/>
+            <rect x="9.1" y="10.4" width="4.3" height="9.4" rx="1.1" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand-word" id="brand-word">tastto</span>
+        <span class="brand-tag" id="brand-tag">carteira de clientes</span>
+      </div>
+      <h1 id="page-title">Identidade visual por cliente</h1>
+      <p class="sub" id="page-sub">Classifique o que cada cliente da Tastto tem disponível na pasta de logos (04 | AUDIOVISUAL &gt; 01 | LOGOS) e mantenha a lista atualizada conforme os materiais chegam.</p>
+    </div>
+    <div class="head-actions">
+      <button class="ghost" id="btn-pdf">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 1.5v8.3M8 9.8 5 6.8M8 9.8l3-3M2.5 11v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Baixar PDF
+      </button>
+      <button class="primary" id="toggle-add">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Adicionar cliente
+      </button>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat total">
+      <div class="n" id="stat-total">0</div>
+      <div class="l">Clientes</div>
+    </div>
+    <div class="stat nao-tem">
+      <div class="n" id="stat-nao_tem">0<span class="pct" id="pct-nao_tem"></span></div>
+      <div class="l">Não tem</div>
+    </div>
+    <div class="stat basico">
+      <div class="n" id="stat-basico">0<span class="pct" id="pct-basico"></span></div>
+      <div class="l">Básico</div>
+    </div>
+    <div class="stat completo">
+      <div class="n" id="stat-completo">0<span class="pct" id="pct-completo"></span></div>
+      <div class="l">Completo</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M9.5 9.5 13 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <input type="text" id="search" placeholder="Buscar cliente…" autocomplete="off" />
+    </div>
+    <div class="filters" id="filters">
+      <button class="chip active" data-status="all">Todos</button>
+      <button class="chip" data-status="nao_tem">Não tem</button>
+      <button class="chip" data-status="basico">Básico</button>
+      <button class="chip" data-status="completo">Completo</button>
+    </div>
+  </div>
+
+  <div class="add-panel" id="add-panel">
+    <div class="field">
+      <label for="new-name">Cliente</label>
+      <input type="text" id="new-name" placeholder="Nome do cliente" />
+    </div>
+    <div class="field">
+      <label for="new-status">Classificação</label>
+      <select id="new-status">
+        <option value="nao_tem">Não tem</option>
+        <option value="basico">Básico</option>
+        <option value="completo">Completo</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="new-note">Observação (opcional)</label>
+      <input type="text" id="new-note" placeholder="Ex: só PNG, sem vetor" />
+    </div>
+    <div class="field">
+      <button class="primary" id="confirm-add">Adicionar</button>
+    </div>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <p class="foot">Esses dados ficam salvos num banco compartilhado — qualquer pessoa com o link vê e edita a mesma lista, em tempo real. Base inicial: auditoria do Google Drive de 21/07/2026 · operado por Grupo Arttico.</p>
+
+  <div class="sync-actions">
+    <button type="button" id="btn-export">Exportar dados (.json)</button>
+    <span class="sync-sep">·</span>
+    <button type="button" id="btn-import">Importar dados</button>
+    <input type="file" id="import-file" accept="application/json,.json" style="display:none" />
+  </div>
+  <p class="sync-hint" id="sync-hint"></p>
+
+  <div class="print-banner" id="print-banner">
+    <p><strong>Relatório pronto para impressão</strong>Pressione <span class="kbd">Ctrl</span> + <span class="kbd">P</span> (ou <span class="kbd">Cmd</span> + <span class="kbd">P</span> no Mac) e escolha "Salvar como PDF" no destino.</p>
+    <button id="print-banner-close" type="button" aria-label="Fechar aviso">&times;</button>
+  </div>
+
+  <div id="print-report"></div>
+</div>
+
+<script>
+(function () {
+  // ---- CONFIGURAÇÃO DO SUPABASE ----
+  // Preencha com os dados do seu projeto (Project Settings > API no painel do Supabase).
+  var SUPABASE_URL = "https://tdwdpukgireablhrgfsh.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_mVUZJcZPqcxKwmd_W9Mc5A_pDNZN3u_";
+  var CONFIGURED = SUPABASE_URL.indexOf("COLOQUE_AQUI") === -1 && SUPABASE_ANON_KEY.indexOf("COLOQUE_AQUI") === -1;
+  var db = (CONFIGURED && window.supabase) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  var STATUS_LABEL = { nao_tem: "Não tem", basico: "Básico", completo: "Completo" };
+  var STATUS_ORDER = ["nao_tem", "basico", "completo"];
+
+  var TASTTO_MARK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9.3c3.6 0 6.3-1.9 8.4-5.3" stroke="currentColor" stroke-width="4.3" stroke-linecap="round"/><rect x="9.1" y="10.4" width="4.3" height="9.4" rx="1.1" fill="currentColor"/></svg>';
+  var ARTTICO_MARK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor" opacity="0.15"/><path d="M12 5 19 19M12 5 5 19M8.5 14h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var BRANDS = {
+    tastto: {
+      label: "tastto",
+      mark: TASTTO_MARK,
+      sub: "Classifique o que cada cliente da Tastto tem disponível na pasta de logos (04 | AUDIOVISUAL &gt; 01 | LOGOS) e mantenha a lista atualizada conforme os materiais chegam.",
+      theme: {
+        bg: "#100d1a", "bg-wash-1": "#241c3d", "bg-wash-2": "#1a1530",
+        card: "#17131f", "card-soft": "#1c1727", border: "#2c2740", "border-soft": "#231f33",
+        ink: "#edebf7", "ink-soft": "#aca4c9", "ink-faint": "#746c93",
+        accent: "#7c6cf6", "accent-hi": "#9285ff", "accent-ink": "#ffffff", "accent-soft": "#241f3d", focus: "#9285ff",
+        "shadow-sm": "0 1px 2px rgba(8, 6, 16, 0.4)",
+        "shadow-md": "0 1px 2px rgba(8, 6, 16, 0.45), 0 14px 34px -16px rgba(70, 45, 150, 0.4)",
+        "shadow-lg": "0 6px 16px rgba(8, 6, 16, 0.5), 0 30px 60px -20px rgba(80, 55, 170, 0.45)"
+      }
+    },
+    arttico: {
+      label: "arttico",
+      mark: ARTTICO_MARK,
+      sub: "Classifique o que cada cliente direto da Arttico tem disponível na pasta de logo (02 | Materiais &gt; Logo) e mantenha a lista atualizada conforme os materiais chegam.",
+      theme: {
+        bg: "#071235", "bg-wash-1": "#0d1f52", "bg-wash-2": "#081847",
+        card: "#0b1940", "card-soft": "#0e1e4a", border: "#1c2c5c", "border-soft": "#142150",
+        ink: "#edf3fb", "ink-soft": "#9fadd6", "ink-faint": "#64719e",
+        accent: "#50d6eb", "accent-hi": "#7de3f2", "accent-ink": "#071235", "accent-soft": "#0f2e42", focus: "#50d6eb",
+        "shadow-sm": "0 1px 2px rgba(2, 5, 18, 0.4)",
+        "shadow-md": "0 1px 2px rgba(2, 5, 18, 0.45), 0 14px 34px -16px rgba(20, 130, 160, 0.35)",
+        "shadow-lg": "0 6px 16px rgba(2, 5, 18, 0.5), 0 30px 60px -20px rgba(20, 150, 180, 0.4)"
+      }
+    }
+  };
+
+  var BRAND_STORAGE_KEY = "identidade-visual-marca-ativa";
+  var state = { brand: "tastto", clients: [], filter: "all", search: "", confirmingId: null };
+  var realtimeChannel = null;
+  var hintTimer = null;
+
+  function uid() { return "c" + Math.random().toString(36).slice(2, 10); }
+
+  function errMsg(err) {
+    return (err && (err.message || err.code)) || "erro desconhecido";
+  }
+
+  function showHint(msg, isError) {
+    var el = document.getElementById("sync-hint");
+    el.textContent = msg;
+    el.style.color = isError ? "var(--nao-tem)" : "var(--ink-faint)";
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () { el.textContent = ""; }, 6000);
+  }
+
+  function requireDb() {
+    if (!db) { showHint("Supabase não configurado — veja o aviso no topo da página.", true); return null; }
+    return db;
+  }
+
+  function rowToClient(row) {
+    return { id: row.id, name: row.name, status: row.status, note: row.note || "" };
+  }
+
+  async function fetchClients(brandKey) {
+    var res = await db.from("clientes").select("*").eq("brand", brandKey).order("name");
+    if (res.error) throw res.error;
+    return res.data;
+  }
+
+  async function load() {
+    if (!db) { state.clients = []; render(); return; }
+    document.getElementById("list").innerHTML = '<div class="empty">Carregando…</div>';
+    try {
+      var rows = await fetchClients(state.brand);
+      state.clients = rows.map(rowToClient);
+    } catch (err) {
+      showHint("Erro ao carregar dados: " + errMsg(err), true);
+      state.clients = [];
+    }
+    render();
+  }
+
+  function subscribeRealtime(brandKey) {
+    if (!db) return;
+    if (realtimeChannel) { db.removeChannel(realtimeChannel); realtimeChannel = null; }
+    realtimeChannel = db.channel("clientes-" + brandKey)
+      .on("postgres_changes", { event: "*", schema: "public", table: "clientes", filter: "brand=eq." + brandKey }, handleRealtimeChange)
+      .subscribe();
+  }
+
+  function handleRealtimeChange(payload) {
+    if (payload.eventType === "INSERT") {
+      if (!state.clients.some(function (c) { return c.id === payload.new.id; })) {
+        state.clients.push(rowToClient(payload.new));
+        render();
+      }
+    } else if (payload.eventType === "UPDATE") {
+      var idx = state.clients.findIndex(function (c) { return c.id === payload.new.id; });
+      if (idx !== -1) { state.clients[idx] = rowToClient(payload.new); render(); }
+    } else if (payload.eventType === "DELETE") {
+      var before = state.clients.length;
+      state.clients = state.clients.filter(function (c) { return c.id !== payload.old.id; });
+      if (state.clients.length !== before) render();
+    }
+  }
+
+  function applyTheme(brandKey) {
+    var tokens = BRANDS[brandKey].theme;
+    var root = document.documentElement.style;
+    Object.keys(tokens).forEach(function (key) { root.setProperty("--" + key, tokens[key]); });
+  }
+
+  function setBrand(brandKey) {
+    state.brand = brandKey;
+    state.filter = "all";
+    state.search = "";
+    state.confirmingId = null;
+    try { localStorage.setItem(BRAND_STORAGE_KEY, brandKey); } catch (e) {}
+
+    var brand = BRANDS[brandKey];
+    applyTheme(brandKey);
+    document.getElementById("brand-mark").innerHTML = brand.mark;
+    document.getElementById("brand-word").textContent = brand.label;
+    document.getElementById("page-sub").innerHTML = brand.sub;
+    document.getElementById("search").value = "";
+    document.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+    document.querySelector('.chip[data-status="all"]').classList.add("active");
+    document.querySelectorAll("#brand-switch button").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-brand") === brandKey);
+    });
+
+    subscribeRealtime(brandKey);
+    load();
+  }
+
+  function initials(name) {
+    var parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "?";
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function render() {
+    var counts = { nao_tem: 0, basico: 0, completo: 0 };
+    state.clients.forEach(function (c) { counts[c.status] = (counts[c.status] || 0) + 1; });
+    var total = state.clients.length;
+    document.getElementById("stat-total").textContent = total;
+    STATUS_ORDER.forEach(function (s) {
+      document.getElementById("stat-" + s).firstChild.textContent = counts[s] || 0;
+      var pctEl = document.getElementById("pct-" + s);
+      pctEl.textContent = total ? Math.round((counts[s] || 0) / total * 100) + "%" : "";
+    });
+
+    var q = state.search.trim().toLowerCase();
+    var visible = state.clients.filter(function (c) {
+      if (state.filter !== "all" && c.status !== state.filter) return false;
+      if (q && c.name.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+    visible.sort(function (a, b) { return a.name.localeCompare(b.name, "pt-BR"); });
+
+    var list = document.getElementById("list");
+    list.innerHTML = "";
+
+    if (visible.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty";
+      empty.innerHTML = "<svg width=\"36\" height=\"36\" viewBox=\"0 0 36 36\" fill=\"none\"><circle cx=\"18\" cy=\"18\" r=\"14\" stroke=\"currentColor\" stroke-width=\"1.6\"/><path d=\"M13 18h10M18 13v10\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" opacity=\"0.5\"/></svg>" +
+        (state.clients.length === 0 ? "Nenhum cliente cadastrado ainda." : "Nenhum cliente encontrado com esse filtro.");
+      list.appendChild(empty);
+      return;
+    }
+
+    var groupByFilter = state.filter === "all" && !q;
+    var lastGroup = null;
+
+    visible.forEach(function (c, idx) {
+      if (groupByFilter && c.status !== lastGroup) {
+        lastGroup = c.status;
+        var label = document.createElement("div");
+        label.className = "group-label";
+        label.textContent = STATUS_LABEL[c.status] + " · " + counts[c.status];
+        list.appendChild(label);
+      }
+
+      var row = document.createElement("div");
+      row.className = "row";
+      row.style.animationDelay = (Math.min(idx, 20) * 18) + "ms";
+
+      var avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = initials(c.name);
+      avatar.style.background = "var(--" + c.status.replace("_", "-") + "-bg)";
+      avatar.style.color = "var(--" + c.status.replace("_", "-") + "-ink)";
+      row.appendChild(avatar);
+
+      var name = document.createElement("div");
+      name.className = "name";
+      name.textContent = c.name;
+      name.title = c.name;
+      row.appendChild(name);
+
+      var seg = document.createElement("div");
+      seg.className = "seg";
+      seg.setAttribute("role", "radiogroup");
+      seg.setAttribute("aria-label", "Status de " + c.name);
+      STATUS_ORDER.forEach(function (s) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.setAttribute("data-status", s);
+        b.setAttribute("role", "radio");
+        b.setAttribute("aria-checked", s === c.status ? "true" : "false");
+        b.className = s === c.status ? "on" : "";
+        b.textContent = STATUS_LABEL[s];
+        b.addEventListener("click", function () {
+          if (c.status === s || !requireDb()) return;
+          var prev = c.status;
+          c.status = s;
+          render();
+          db.from("clientes").update({ status: s }).eq("id", c.id).then(function (res) {
+            if (res.error) { c.status = prev; render(); showHint("Não deu pra salvar o status: " + errMsg(res.error), true); }
+          });
+        });
+        seg.appendChild(b);
+      });
+      row.appendChild(seg);
+
+      var note = document.createElement("input");
+      note.className = "note-input";
+      note.type = "text";
+      note.placeholder = "Observação…";
+      note.value = c.note || "";
+      note.addEventListener("change", function () {
+        if (!requireDb()) { note.value = c.note || ""; return; }
+        var prev = c.note;
+        c.note = note.value;
+        db.from("clientes").update({ note: c.note }).eq("id", c.id).then(function (res) {
+          if (res.error) { c.note = prev; note.value = prev; showHint("Não deu pra salvar a observação: " + errMsg(res.error), true); }
+        });
+      });
+      row.appendChild(note);
+
+      var actions = document.createElement("div");
+      actions.className = "row-actions";
+
+      if (state.confirmingId === c.id) {
+        var confirmWrap = document.createElement("div");
+        confirmWrap.className = "confirm-del";
+        var span = document.createElement("span");
+        span.textContent = "Remover?";
+        var yes = document.createElement("button");
+        yes.className = "yes";
+        yes.textContent = "Sim";
+        yes.addEventListener("click", function () {
+          if (!requireDb()) return;
+          state.confirmingId = null;
+          db.from("clientes").delete().eq("id", c.id).then(function (res) {
+            if (res.error) { showHint("Não deu pra remover: " + errMsg(res.error), true); render(); return; }
+            state.clients = state.clients.filter(function (x) { return x.id !== c.id; });
+            render();
+          });
+        });
+        var no = document.createElement("button");
+        no.className = "no";
+        no.textContent = "Não";
+        no.addEventListener("click", function () { state.confirmingId = null; render(); });
+        confirmWrap.appendChild(span);
+        confirmWrap.appendChild(yes);
+        confirmWrap.appendChild(no);
+        actions.appendChild(confirmWrap);
+      } else {
+        var del = document.createElement("button");
+        del.className = "del";
+        del.title = "Remover cliente";
+        del.innerHTML = "<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3 4.5h10M6.5 4.5V3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1.5M4.5 4.5 5 13a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1l.5-8.5\" stroke=\"currentColor\" stroke-width=\"1.3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>";
+        del.addEventListener("click", function () { state.confirmingId = c.id; render(); });
+        actions.appendChild(del);
+      }
+      row.appendChild(actions);
+
+      list.appendChild(row);
+    });
+  }
+
+  document.getElementById("filters").addEventListener("click", function (e) {
+    var btn = e.target.closest(".chip");
+    if (!btn) return;
+    state.filter = btn.getAttribute("data-status");
+    document.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+    btn.classList.add("active");
+    render();
+  });
+
+  document.getElementById("search").addEventListener("input", function (e) {
+    state.search = e.target.value;
+    render();
+  });
+
+  var addPanel = document.getElementById("add-panel");
+  document.getElementById("toggle-add").addEventListener("click", function () {
+    addPanel.classList.toggle("open");
+    if (addPanel.classList.contains("open")) document.getElementById("new-name").focus();
+  });
+
+  function addClient() {
+    if (!requireDb()) return;
+    var nameInput = document.getElementById("new-name");
+    var statusInput = document.getElementById("new-status");
+    var noteInput = document.getElementById("new-note");
+    var name = nameInput.value.trim();
+    if (!name) { nameInput.focus(); return; }
+    var newRow = { brand: state.brand, name: name, status: statusInput.value, note: noteInput.value.trim() };
+    db.from("clientes").insert([newRow]).select().then(function (res) {
+      if (res.error) { showHint("Não deu pra adicionar: " + errMsg(res.error), true); return; }
+      state.clients.push(rowToClient(res.data[0]));
+      nameInput.value = "";
+      noteInput.value = "";
+      statusInput.value = "nao_tem";
+      addPanel.classList.remove("open");
+      state.filter = "all";
+      state.search = "";
+      document.getElementById("search").value = "";
+      document.querySelectorAll(".chip").forEach(function (c) { c.classList.remove("active"); });
+      document.querySelector('.chip[data-status="all"]').classList.add("active");
+      render();
+    });
+  }
+
+  document.getElementById("confirm-add").addEventListener("click", function (e) {
+    e.preventDefault();
+    addClient();
+  });
+
+  document.getElementById("add-panel").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); addClient(); }
+  });
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  var STATUS_META = {
+    nao_tem: { title: "Sem logo / identidade visual", color: "#e0785f", bg: "#34222a" },
+    basico: { title: "Básico / incompleto", color: "#d8ac49", bg: "#332c22" },
+    completo: { title: "Completo ou aceitável", color: "#5fbf85", bg: "#1c2e28" }
+  };
+
+  function buildPrintReport() {
+    var brand = BRANDS[state.brand];
+    var t = brand.theme;
+    var counts = { nao_tem: 0, basico: 0, completo: 0 };
+    state.clients.forEach(function (c) { counts[c.status] = (counts[c.status] || 0) + 1; });
+    var total = state.clients.length;
+
+    var today = new Date();
+    var dateStr = String(today.getDate()).padStart(2, "0") + "/" + String(today.getMonth() + 1).padStart(2, "0") + "/" + today.getFullYear();
+
+    var html = '<div style="background:' + t.bg + ';color:' + t.ink + ';font-family:-apple-system,\'Segoe UI\',Arial,sans-serif;padding:22px 26px;">';
+
+    html += '<div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;">' +
+      '<span style="display:inline-flex;color:' + t.accent + ';">' + brand.mark.replace('width="22" height="22"', 'width="18" height="18"') + '</span>' +
+      '<span style="font-size:14px;font-weight:800;color:' + t.ink + ';letter-spacing:-0.01em;">' + escapeHtml(brand.label) + '</span></div>';
+
+    html += '<h1 style="font-family:Georgia,serif;font-size:21px;font-weight:600;margin:0 0 4px;color:' + t.ink + ';">Identidade Visual — Clientes</h1>';
+    html += '<p style="font-size:11px;color:' + t["ink-soft"] + ';margin:0 0 16px;">Relatório gerado em ' + dateStr + ' · ' + total + ' clientes analisados · operado por Grupo Arttico</p>';
+
+    html += '<div style="display:flex;gap:8px;margin-bottom:18px;">';
+    var statTiles = [["total", "Clientes", total, t.accent]]
+      .concat(STATUS_ORDER.map(function (s) { return [s, STATUS_META[s].title.split(" / ")[0], counts[s] || 0, STATUS_META[s].color]; }));
+    statTiles.forEach(function (tile) {
+      html += '<div style="flex:1;position:relative;background:' + t.card + ';border:1px solid ' + t.border + ';border-radius:9px;padding:9px 11px 9px 14px;">' +
+        '<div style="position:absolute;left:0;top:0;bottom:0;width:3px;background:' + tile[3] + ';border-radius:9px 0 0 9px;"></div>' +
+        '<div style="font-size:19px;font-weight:700;color:' + (tile[0] === "total" ? t.ink : tile[3]) + ';">' + tile[2] + '</div>' +
+        '<div style="font-size:10px;color:' + t["ink-soft"] + ';font-weight:600;margin-top:2px;">' + escapeHtml(tile[1]) + '</div></div>';
+    });
+    html += '</div>';
+
+    STATUS_ORDER.forEach(function (s) {
+      var rows = state.clients.filter(function (c) { return c.status === s; })
+        .sort(function (a, b) { return a.name.localeCompare(b.name, "pt-BR"); });
+      html += '<div style="margin-bottom:14px;">';
+      html += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:' + t["ink-faint"] + ';margin:0 0 6px;">' +
+        escapeHtml(STATUS_META[s].title) + ' · ' + rows.length + '</div>';
+      if (rows.length === 0) {
+        html += '<div style="font-size:11px;color:' + t["ink-faint"] + ';padding:6px 2px;">Nenhum cliente nessa categoria.</div>';
+      } else {
+        rows.forEach(function (c) {
+          html += '<div style="display:flex;align-items:center;gap:10px;background:' + t.card + ';border:1px solid ' + t["border-soft"] + ';border-radius:9px;padding:7px 12px;margin-bottom:5px;">' +
+            '<div style="flex:0 0 26px;width:26px;height:26px;border-radius:7px;background:' + STATUS_META[s].bg + ';color:' + STATUS_META[s].color + ';display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;">' + escapeHtml(initials(c.name)) + '</div>' +
+            '<div style="flex:0 0 auto;min-width:140px;max-width:220px;font-size:12px;font-weight:600;color:' + t.ink + ';">' + escapeHtml(c.name) + '</div>' +
+            '<div style="flex:1;font-size:11px;color:' + t["ink-soft"] + ';">' + escapeHtml(c.note || "—") + '</div></div>';
+        });
+      }
+      html += '</div>';
+    });
+
+    html += '<p style="font-size:9.5px;color:' + t["ink-faint"] + ';margin-top:6px;">Gerado a partir do painel de Identidade Visual — Grupo Arttico.</p>';
+    html += '</div>';
+
+    document.getElementById("print-report").innerHTML = html;
+  }
+
+  document.getElementById("btn-pdf").addEventListener("click", function () {
+    buildPrintReport();
+    document.getElementById("print-banner").classList.add("show");
+  });
+
+  document.getElementById("print-banner-close").addEventListener("click", function () {
+    document.getElementById("print-banner").classList.remove("show");
+  });
+
+  window.addEventListener("afterprint", function () {
+    document.getElementById("print-banner").classList.remove("show");
+  });
+
+  document.getElementById("brand-switch").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-brand]");
+    if (!btn) return;
+    var brandKey = btn.getAttribute("data-brand");
+    if (brandKey === state.brand) return;
+    setBrand(brandKey);
+  });
+
+  document.getElementById("btn-export").addEventListener("click", function () {
+    var payload = { brand: state.brand, exportedAt: new Date().toISOString(), clients: state.clients };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "identidade-visual-" + state.brand + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    showHint("Exportado. Envie esse arquivo pra quem for importar.");
+  });
+
+  document.getElementById("btn-import").addEventListener("click", function () {
+    document.getElementById("import-file").click();
+  });
+
+  document.getElementById("import-file").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file || !requireDb()) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var parsed;
+      try { parsed = JSON.parse(reader.result); } catch (err) {
+        showHint("Arquivo inválido: não é um JSON.", true);
+        return;
+      }
+      var list = Array.isArray(parsed) ? parsed : parsed.clients;
+      if (!Array.isArray(list)) {
+        showHint("Arquivo inválido: formato não reconhecido.", true);
+        return;
+      }
+      var clean = list
+        .map(function (c) {
+          return {
+            brand: state.brand,
+            name: String((c && c.name) || "").trim(),
+            status: c && STATUS_LABEL[c.status] ? c.status : "nao_tem",
+            note: String((c && c.note) || "")
+          };
+        })
+        .filter(function (c) { return c.name; });
+
+      showHint("Importando " + clean.length + " clientes…");
+      db.from("clientes").delete().eq("brand", state.brand).then(function (delRes) {
+        if (delRes.error) { showHint("Erro ao limpar dados antigos: " + errMsg(delRes.error), true); return; }
+        db.from("clientes").insert(clean).select().then(function (insRes) {
+          if (insRes.error) { showHint("Erro ao importar: " + errMsg(insRes.error), true); return; }
+          state.clients = insRes.data.map(rowToClient);
+          render();
+          showHint("Importado: " + state.clients.length + " clientes em " + BRANDS[state.brand].label + ".");
+        });
+      });
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById("setup-banner").style.display = CONFIGURED ? "none" : "block";
+
+  var initialBrand = "tastto";
+  try {
+    var savedBrand = localStorage.getItem(BRAND_STORAGE_KEY);
+    if (savedBrand && BRANDS[savedBrand]) initialBrand = savedBrand;
+  } catch (e) {}
+  setBrand(initialBrand);
+})();
+</script>
+</body>
+</html>
